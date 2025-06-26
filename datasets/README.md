@@ -30,5 +30,5 @@ The first column, "Row_ID" contains a uniqu identifier for that row. This is to 
 The other 10 columns each represent one of the emotional relationships each lyrical token was scored for. These 10 emotional catagories reflect those used in the EMOlex tool used as a part of this project. They are in order: Anger, Anticipation, Disgust, Fear, Joy, Negative, Positive, Sadness, Surprise, and Trust.
 
 ### Dataframe IV: df_scores_normalized
-This dataframe is exactly like the one above in its structure. I.E., 11 columns and 3,482,119 rows all labeled exactly the same as the previous.
-This dataframe is different in that it contains the scores normalized accross each row. this is to ensure that each emotional category scored for for each song analyzed are all scored somewhere between 0 and 1. 
+This dataframe is exactly like the one above in its structure. I.E., 11 columns and 3,482,119 rows all labeled exactly the same as the previous. It is made after running "step 17.4" of the code.
+This dataframe is different in that it contains the scores normalized accross each row. This is to ensure that each emotional category scored for for each song analyzed are all scored somewhere between 0 and 1. 
