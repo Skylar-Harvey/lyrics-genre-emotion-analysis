@@ -11,17 +11,17 @@ The file contains four different dataframes each stored two ways. A CSV file for
 ### Dataframe I: df_master
 This dataframe is the result of "step 13" of the code outlined [here](link). It contains 4 columns and 3,482,119 rows.
 The columns are as follows:
-Song_Name - The ttile of the songs represented in that row
-Lyrics - A string containing the lyrics of the song
-Language - A two-letter code that insicates the language of the lyrics data
-Genre - The genres associated with the song
+- Song_Name - The ttile of the songs represented in that row
+- Lyrics - A string containing the lyrics of the song
+- Language - A two-letter code that insicates the language of the lyrics data
+- Genre - The genres associated with the song
 
 ### Dataframe II: df_master_cln
 This is a cleaned version of the above dataframe dervived from "step 14" of the code. It contains 3 columns and 3,482,119
 The columns are as follows:
-Lyrics_Clean - Cleaned lyrical data. Punctuation, filler words, common words ("a", "and", "the", etc.), and other non-lyric data removed from lyric strings
-Genre_Clean - Cleaned genre data. Each song, if it had more than one genre association, now has only one genre association based on first match to the list of genres analyzed in the project
-Row_ID - A unique identifier for each row. Used to run mergers with other dataframes later.
+- Lyrics_Clean - Cleaned lyrical data. Punctuation, filler words, common words ("a", "and", "the", etc.), and other non-lyric data removed from lyric strings
+- Genre_Clean - Cleaned genre data. Each song, if it had more than one genre association, now has only one genre association based on first match to the list of genres analyzed in the project
+- Row_ID - A unique identifier for each row. Used to run mergers with other dataframes later.
 
 ### Dataframe III: 
 This 
