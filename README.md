@@ -19,7 +19,7 @@ Secondly, the motivation for this project stems from a desire simply to better u
 
 ## Key Results
 This heatmap which shows the average emotional scores per genre, revealing differences in the average emotional profile of each genre.
-![Heatmap of emotional scores by genre](Genre_emotion_heatmap.jpeg)
+![Heatmap of emotional scores by genre](images/Genre_emotion_heatmap.jpeg)
 
 ## License
 MIT License
