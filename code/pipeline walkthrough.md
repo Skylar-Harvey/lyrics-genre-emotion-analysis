@@ -178,4 +178,15 @@ This cell cleans out non-music entries that were part of the "df_genius" datafra
 `df_list[3] = df_list[3][df_list[3]["Genre"] != "misc"]`
 
 ### Step 10
-This cell establishes a new dataframe formed by merging the now cleaned "df_artist" and "df_lyrics" dataframes. This effectivly brings togther the data that was originally downloaded kept as two seperate tables into a single dataframe that can be used withing the project. The dataframe "df_artist" contained 
+This cell establishes a new dataframe formed by merging the now cleaned "df_artist" and "df_lyrics" dataframes. This effectivly brings togther the data that was originally downloaded kept as two seperate tables into a single dataframe that can be used within the project. The dataframe "df_artist" contained, amoung other data, information about each song's genre association, and the "df_lyrics" dataframe contained information about each song's lyrics and language. These two dataframes are left merged (df_lyrics to df_artist) on the "Artist_link" column that they share. Following this, some checks are made on the new merged dataframe, "df_merged", to ensure that the meger was sucessful:
+```
+df_merged = df_list[1].merge(df_list[0], on="Artist_Link", how="left")
+df_list = [df_merged, df_list[2], df_list[3]]
+print(df_list[0].info())
+print(df_list[0].head())
+print(df_list[0].isnull().sum())
+print(df_list[0].shape)
+print(df_list[0]["Language"].value_counts())
+```
+
+### Step 11
