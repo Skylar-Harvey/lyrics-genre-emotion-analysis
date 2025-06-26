@@ -1,8 +1,8 @@
 # Hello
 The purpose of this "datasets" folder is to store copies of the datasets used within this project, as well as the various saved and cleaned dataframes made along the way.
 Due to the size of the datasets used, they have been stored externally instead of here. To access them, use the folllowing links:
-[Click here to download the dataframes made along the way as a zip file](link)
-[Click here to be rerouted back to this repository's main page. Links to the datasets used in this project can be found in the primary readme](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis)
+- [Click here to download the dataframes made along the way as a zip file](link)
+- [Click here to be rerouted back to this repository's main page. Links to the datasets used in this project can be found in the primary readme](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis)
 
 
 
