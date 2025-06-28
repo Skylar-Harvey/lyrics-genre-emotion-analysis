@@ -1,7 +1,7 @@
 # Hello
 The purpose of this "datasets" folder is to store copies of the datasets used within this project, as well as the various saved and cleaned dataframes made along the way.
 Due to the size of the datasets used, they have been stored externally instead of here. To access them, use the folllowing links:
-- [Click here to download the dataframes made along the way as a zip file](https://drive.google.com/file/d/18a63Ut-8BJbR4ypmg-jf8dGht0gXr6iP/view?usp=drive_link)
+- [Click here to be redirected to a google drive where you can download the dataframes made along the way as a zip file](https://drive.google.com/file/d/18a63Ut-8BJbR4ypmg-jf8dGht0gXr6iP/view?usp=drive_link)
 - [Click here to be rerouted back to this repository's main page. Links to the datasets used in this project can be found in the primary readme](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis)
 
 
@@ -10,7 +10,7 @@ Due to the size of the datasets used, they have been stored externally instead o
 The file contains four different dataframes each stored two ways. A CSV file for easy viewing or implementation in other projects, and as a .pkl file for easy implementation into coding environments.
 
 ### Dataframe I: df_master
-This dataframe is the result of "step 13" of the code outlined in the [code walkthrough](here). It contains 4 columns and 3,482,119 rows.
+This dataframe is the result of "step 13" of the code outlined in the [code walkthrough](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis/blob/main/code/pipeline%20walkthrough.md). It contains 4 columns and 3,482,119 rows.
 The columns are as follows:
 - Song_Name - The ttile of the songs represented in that row
 - Lyrics - A string containing the lyrics of the song
