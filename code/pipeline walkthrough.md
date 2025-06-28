@@ -1,5 +1,5 @@
 # Pipeline Walkthrough
-this is a walkthrough for the analysis pipeline notebook [here](code/Analysis Pipeline.ipynb). 
+this is a walkthrough for the analysis pipeline notebook [here](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis/blob/main/code/Analysis%20Pipeline.ipynb). 
 
 ### Step 1
 This cell's function is importing libraries and modules needed for running the pipeline. These are:
