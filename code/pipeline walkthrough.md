@@ -1,5 +1,5 @@
 # Pipeline Walkthrough
-this is a walkthrough for the analysis pipeline notebook [here](link). 
+this is a walkthrough for the analysis pipeline notebook [here](code/Analysis Pipeline.ipynb). 
 
 ### Step 1
 This cell's function is importing libraries and modules needed for running the pipeline. These are:
