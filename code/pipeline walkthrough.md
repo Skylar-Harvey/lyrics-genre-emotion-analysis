@@ -272,3 +272,136 @@ df_master_cln = df_master_cln.drop(columns=["Song_Name"]) #drops song_name data 
 ```
 
 ### Step 15
+This cell represents a somewhat optional step in that it isn't completely needed to run the analysis. But it is till usefull as way to get a quick glance at the nature of the lyric data contained in the master dataframe. This can be used as a point in the project to adjust the "stoop_words" set defined in the previous cell's function for preprocessing the lyrical data. The cell begins similarly to the previous cell in that it defines two funtions, "word_frequency_by_genre" and "freq_by_genre", the former of which is used by the later:
+```
+# Function for preformance of word frequency anlaysis of words in different genres
+def word_frequency_by_genre(df,genre,top_n=25):
+	genre_lyrics = " ".join(df[df["Genre_Clean"] == genre]["Lyrics_Clean"]) #Gather all the lyrics of the specified genre and set them into on large string object
+	words = genre_lyrics.split() #convert string into list of words
+	word_counts = Counter(words) #count word frequency in genre
+	return word_counts.most_common(top_n) #return 20 most common words in genre
+```
+
+```
+# Function that performs frequency analysis for each genre
+def freq_by_genre(df,genre_list,top_n=25):
+	result ={}
+	for genre in genre_list:
+		result[genre] = word_frequency_by_genre(df, genre, top_n)
+	return result
+```
+After defining these two functions, the cell then builds a collection of simple visualizations that show the top 25 most common words used by each genre:
+```
+genre_list_2 = ['rock','pop','indie','rap','folk','blues','country','metal','electronic','other'] #redefine genre_list to include "other"
+freq_dict = freq_by_genre(df_master_cln,genre_list_2) #run frequency analysis on each genre in dataframe, returns top 25 results, stores results in dictionary
+for genre in genre_list_2:
+	genre_words = freq_dict[genre]
+	words, counts = zip(*genre_words)
+	plt.figure(figsize=(10,10))
+	plt.barh(words,counts)
+	plt.gca().invert_yaxis()
+	plt.xlabel("Occurences in Lyric Data")
+	plt.ylabel("Top 25 Words")
+	plt.title(f"Top 25 Words for {genre.capitalize()}")
+	plt.tight_layout()
+	plt.show()
+```
+
+### Step 16
+This cell's ofunction is to import the EMOlex tool, used to see assosiations of individual words to different emotional categories, into the project. This is done by importing it's data as a pandas dataframe, and then using that to create a dictionary object that stores each word in the EMOlex dataset as a key who's value pairing(s) are the emotional associations that that word is marked as having. For example, the word "abandoned" in the EMOlex dataset has its associations marked as "anger", "fear", "negative", and "sadness". This is represented in the created dictionary object as `{"abandoned":["anger", "fear", "negative", and "sadness"], ... }`
+
+```
+df_emolex = pd.read_csv("F:\\Docs\\personal\\projects\\Sentiment Analysis Project\\NRC-Emotion-Lexicon\\NRC-Emotion-Lexicon\\NRC-Emotion-Lexicon-Wordlevel-v0.92.txt",
+	sep="\t", engine="python", header=None, names=["word","emotion","value"])
+
+word_associations = defaultdict(list)
+for _, row in df_emolex.iterrows():
+	if row["value"]==1:
+		word_associations[row["word"]].append(row["emotion"])
+```
+
+### Step 17
+These next few cells (17.1 - 17.4) are where the actual analysis is run. This begins with "step 17.1", in which some intial prep for the analysis is run. Specifically, before the analysis step can be run, we:
+- add a column "Row_ID" to the cleaned master dataframe, and give each row of the table a unique identifier number.
+- create a new empty dataframe, "df_scores", that has the same amount of rows as does the cleaned master dataframe, as well as an identical "Row_ID" column.
+- expand the the "df_scores" dataframe to include a column for each emotional association counted for in the EMOlex dataset. All of these are initialized at a value of zero(0).
+```
+############# STEP 17.1 - Preparing for the analysis
+
+df_master_cln["Row_ID"] = df_master_cln.index #creates a column of unique identifiers for each entry in the dataframe
+df_scores = pd.DataFrame(df_master_cln["Row_ID"].copy()) #generates a new dataframe with the same amout rows as the cleaned master dataframe. both dataframes can be linked by the "Row_ID" key
+emo_tag_list = ["anger","anticipation","disgust","fear","joy","negative","positive","sadness","surprise","trust"] #list of unique emotional tags in EMOlex associations list
+for tag in emo_tag_list: #expands df_scores to now have a column for each word in emo_tag_list. All are initialized to 0
+	df_scores[tag] = 0
+```
+
+This bit of prep-work done, we move on to creating a scorring function that goes row-by-row through the cleaned master dataframe with it's preprocessed lyrics and genrates a score for each emotional assotiation based on how many times a word having certain associations is encountered in each string of lyrical data. Essentially, each song's lyrics are tokenized into individual words. Each of these words is then checked to see if it matches an entry in the dictionary genereated in "step 16". If a match is found, the column of "df_scores" that represents the respective emotional associations of that word is increased by a value of one. If a match isn't found, then the word token is passed over and no change to the "df_scores" dataframe is made. With this function in place, we can then run it and generate a table of scores that shows each set of lyric's collective emtional scores. (Note: This part of the code, as it is, takes awhile to run (>2hrs in my case). It, like much else with this project, can certainly be improved upon!)
+```
+def score_lyrics(row_n): #define new function "score_lyrics". Function takes in one variable, an row number
+	token_list = df_master_cln.loc[row_n,"Lyrics_Clean"].split() #create a list of word tokens from the lyric string for row_n
+	emotion_counter = {"anger":0,"anticipation":0,"disgust":0,"fear":0,"joy":0,"negative":0,"positive":0,"sadness":0,"surprise":0,"trust":0}
+	for word in token_list: #iterate through created list of word tokens
+		if word in word_associations: #if a token is in the word_associations dictionary defined in step 16:
+			word_key_values = word_associations[word] #pull the value for that word. This value is a list of associated emotions for that word
+			for emotion in word_key_values: #iterate through this list of emotions associated with that word
+				emotion_counter[emotion] +=1
+		else:
+			pass
+	for tag in emo_tag_list:
+		df_scores.loc[row_n, tag] = emotion_counter[tag]
+
+for r in range(len(df_master_cln)):
+	score_lyrics(r)
+```
+Generating this table takes awhile, and so "step 17.3" is another optional (but recomended) step that simply ensures that all of the important dataframes (including the one just made!) are saved as objects that can be recalled later without having to rerun any of the code. I chose here to save everything as both a .csv file and a .pkl file. (Note: the file paths shown in the code are of course particualr to my device and where I chose to store the created files. They should be changed according to need if running this code on your own system.):
+```
+############# STEP 17.3 - Creating project checkpoint. Saving all created dataframes
+
+save_path_pkl = "F:\\Docs\\personal\\projects\\Sentiment Analysis Project\\Saved Dataframes\\pickles\\"
+save_path_csv = "F:\\Docs\\personal\\projects\\Sentiment Analysis Project\\Saved Dataframes\\CSVs\\"
+
+#saving to .pkl
+df_master.to_pickle(save_path_pkl + "df_master.pkl")
+df_master_cln.to_pickle(save_path_pkl + "df_master_cln.pkl")
+df_scores.to_pickle(save_path_pkl + "df_scores.pkl")
+#saving to .csv
+df_master.to_csv(save_path_csv + "df_master.csv")
+df_master_cln.to_csv(save_path_csv + "df_master_cln.csv")
+df_scores.to_csv(save_path_csv + "df_scores.csv")
+```
+Finally, "step 17.4" creates a whole new dataframe "df_scores_normalized" based off the data in the "df_scores" dataframe. Like the name of this new dataframe suggests, it is a version of the "df_scores" dataframe, but with the values contained therein having been normalized (in this case, row-wise) so that each entry in the dataframe (each set of lyrics) has now a collection of scores (one for each of the emotional associations looked for) that are between the values of zero (0) and one (1).
+```
+############# STEP 17.4 - Normalizing the values across the rows in df_scores
+
+df_scores_normalized = pd.DataFrame(df_scores.copy())
+print("New dataframe created: 'df_scores_normalized'")
+print("Data normalization initiated:")
+def normalize_scores(row_n):
+	scores_list = []
+	normal_scores = {"anger":0,"anticipation":0,"disgust":0,"fear":0,"joy":0,"negative":0,"positive":0,"sadness":0,"surprise":0,"trust":0}
+	for tag in emo_tag_list:
+		scores_list.append(df_scores_normalized.loc[row_n,tag])
+	score_range = (max(scores_list)-min(scores_list))
+	if score_range == 0:
+		pass
+	else:
+		for tag in emo_tag_list:
+			normal_scores[tag] = ((df_scores_normalized.loc[row_n,tag] - min(scores_list)) / score_range)
+	for tag in emo_tag_list:
+		df_scores_normalized.loc[row_n, tag] = normal_scores[tag]
+
+for r in range(len(df_scores)):
+	if r % 100000 == 0:
+		print(f"Rows processed : {r}")
+	normalize_scores(r)
+print("Normalization complete!")
+print("Printing sample ...")
+print(df_scores_normalized.head(20))
+
+df_scores_normalized.to_pickle(save_path_pkl + "df_scores_normalized.pkl")
+df_scores_normalized.to_csv(save_path_csv + "df_scores_normalized.csv")
+print("This data has been stored as a .pkl file at:")
+print("		" + save_path_pkl)
+print("This data has been stored as a .csv file at:")
+print("		" + save_path_csv)
+```
