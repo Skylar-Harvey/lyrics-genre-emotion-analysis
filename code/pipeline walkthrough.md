@@ -178,7 +178,7 @@ This cell cleans out non-music entries that were part of the "df_genius" datafra
 `df_list[3] = df_list[3][df_list[3]["Genre"] != "misc"]`
 
 ### Step 10
-This cell establishes a new dataframe formed by merging the now cleaned "df_artist" and "df_lyrics" dataframes. This effectivly brings togther the data that was originally downloaded kept as two seperate tables into a single dataframe that can be used within the project. The dataframe "df_artist" contained, amoung other data, information about each song's genre association, and the "df_lyrics" dataframe contained information about each song's lyrics and language. These two dataframes are left merged (df_lyrics to df_artist) on the "Artist_link" column that they share. Following this, some checks are made on the new merged dataframe, "df_merged", to ensure that the meger was sucessful:
+This cell establishes a new dataframe formed by merging the now cleaned "df_artist" and "df_lyrics" dataframes. This effectivly brings togther some of the data that was originally downloaded, which was kept as two seperate tables, into a single dataframe that can be used within the project. The dataframe "df_artist" contained, amoung other data, information about each song's genre association, and the "df_lyrics" dataframe contained information about each song's lyrics and language. These two dataframes are left-merged (df_lyrics to df_artist) on the "Artist_link" column that they share. Following this, some checks are made on the new merged dataframe, "df_merged", to ensure that the meger was sucessful:
 ```
 df_merged = df_list[1].merge(df_list[0], on="Artist_Link", how="left")
 df_list = [df_merged, df_list[2], df_list[3]]
@@ -190,3 +190,85 @@ print(df_list[0]["Language"].value_counts())
 ```
 
 ### Step 11
+This step runs a few cleaning opperations on the new merged dataframe (df_merged). In order, the following cell of the notebook:
+- Drops rows with null values from the dataframe
+- Removes the "Songs" column.
+- removes all non-english data from the table.
+```
+df_list[0] = df_list[0].dropna(subset=["Artist","Genres","Songs"])
+df_list[0] = df_list[0].drop(columns=["Songs"])
+df_list[0] = df_list[0][df_list[0]["Language"]=="en"]
+```
+
+### Step 12
+This step runs some final steps for cleaning and normalizing the data in the other tables. These steps include:
+- droping all non-english data from the "df_genius" dataframe.
+- adding a language column to the "df_spot60k" dataframe (all marked "unkown").
+- droping the "Artist_Link" column from "df_merged".
+- Normalizing column names of "df_merged" and "df_spot60k"
+```
+df_list[2] = df_list[2][df_list[2]["Language"]=="en"]
+df_list[1]["Language"]="en"
+df_list[0] = df_list[0].drop(columns=["Artist_Link","Artist"])
+df_list[0] = df_list[0].rename(columns={"Genres":"Genre"})
+df_list[1] = df_list[1].rename(columns={"genre":"Genre"})
+```
+
+### Step 13
+This step creates a new dataframe, "df_master" by concatenating the now cleaned other three dataframes. I.E., "df_merged", "df_spot60k", and "df_genius". After doing this, the cell runs a handfull of checks to varify that the new master dataframe is in order and ready to be used. This includes things like checking for null-values in the new dataframe, checking the dimensions of it, checking for duplicates, and looking at the value counts for a few of the columns.
+```
+df_master = pd.concat([df_list[0],df_list[1],df_list[2]], ignore_index=True)
+print("COLUMNS IN DF_MASTER:")
+print(df_master.columns)
+print("NUMBER OF NULL VALUES IN DF_MASTER:")
+print(df_master.isnull().sum())
+print("INFORMATION FOR DF_MASTER:")
+print(df_master.info())
+print()
+print("Duplicates in 'Song_Name' column: ", df_master.duplicated(subset="Song_Name").sum())
+print("Duplicates in 'Lyrics' column: ", df_master.duplicated(subset="Lyrics").sum())
+print("Duplicates in 'Song_Name' and 'Lyrics' column: ", df_master.duplicated(subset=["Song_Name","Lyrics"]).sum())
+print("VALUE COUNTS PER COLUMN OF DF_MASTER:")
+print("Value counts for 'Language' column:", df_master["Language"].value_counts())
+print("Value counts for 'Genre' column:", df_master["Genre"].value_counts().to_string())
+```
+
+### Step 14
+This cell does a number of things to both clean up the master dataframe and to preprocess the lyrical data contained within it. To begin this, we define two functions called "preprocess_lyrics" and "clean_genre":
+```
+# Function for preprocessing lyrics for analysis
+stop_words = set(stopwords.words("english")).union({"im","ive","youre","youve","yeah","oh","get","gonna","aint","uh","ha","wanna","la","hey","woah","whoa","ooh","mmm"})
+def preprocess_lyrics(text):
+	if isinstance(text, str):
+		text = text.lower()
+		text = re.sub(r"[^\w\s]", "", text)
+		text = re.sub(r"\d+", "", text)
+		words = text.split()
+		words = [word for word in words if word not in stop_words]
+		return " ".join(words)
+	return text
+```
+
+```
+# Function for processing and cleaning entries in the 'genre' column of the master dataframe
+genre_list = ['rock','pop','indie','rap','folk','blues','country','metal','electronic']
+def clean_genre(genre_string):
+	if isinstance(genre_string, str):
+		genres = [g.strip().lower() for g in genre_string.split(';')]
+		for g in genres:
+			if g in genre_list:
+				return g
+	return 'other'
+```
+These functions are then applied to the concatenated master dataframe:
+```
+df_master["Lyrics_Clean"] = df_master["Lyrics"].apply(preprocess_lyrics) #cleaning up lyric data and inserting clean lyric data into new column
+df_master["Genre_Clean"] = df_master["Genre"].apply(clean_genre) #normalizes genre lables, and reasigns song entries with multiple lables a single genre lable based on first match to a desired list (genre_list)
+```
+And finally, a new, cleaned version of the master dataframe is saved (df_master_cln), and the column "Song_Name" is droped from this new dataframe:
+```
+df_master_cln = df_master[["Song_Name","Lyrics_Clean","Genre_Clean"]].copy() #creates a copy of the master data frame containing only the cleaned data and song names.
+df_master_cln = df_master_cln.drop(columns=["Song_Name"]) #drops song_name data column from clean copy of master dataframe
+```
+
+### Step 15
