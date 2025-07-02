@@ -418,4 +418,23 @@ Step 18 takes the dataframes that contain the genre information for each set of 
 `df_final = NormScore_reloaded.merge(Master_cln_reloaded[["Row_ID","Genre_Clean"]], on="Row_ID", how="left")`
 
 ### Step 19
-This penultimate is a simple step to group the entries in the final dataframe just created by genre, producing the dataframe that is used to build the heatmap in the next step. This is saved as a dataframe called "df_heatmap" and it contains. along with the "Row_ID" column, 
+This penultimate is a simple step to group the entries in the final dataframe just created by genre, producing the dataframe that is used to build the heatmap in the next step. This is saved as a dataframe called "df_heatmap" and it contains a row for each genre looked at in this project, and the mean score of each emotional category.
+`df_heatmap = df_final.groupby("Genre_Clean")[emo_tag_list].mean()`
+
+### Step 20
+This final step uses seaborn to build a heatmap that visualizes the data in the "df_heatmap" dataframe generated in the last step.
+```
+plt.figure(figsize=(12, 6))
+sns.heatmap(
+	df_heatmap,
+	cmap = "YlGnBu",
+	annot = True,
+	fmt = ".2f",
+	cbar = "True")
+
+plt.title("Average Emotional Profile of Genre")
+plt.xlabel("Emotion")
+plt.ylabel("Genre")
+plt.tight_layout()
+plt.show()
+```
