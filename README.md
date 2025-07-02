@@ -18,7 +18,7 @@ Secondly, the motivation for this project stems from a desire simply to better u
  - Visualized the results using a heatmap made using Seaborn
 
 ## Key Results
-This heatmap which shows the average emotional scores per genre, revealing differences in the average emotional profile of each genre.
+This heatmap which shows the average emotional scores per genre, revealing differences in the average emotional profile of each genre. While not meant to be taken as any kind of conclusive evidence of the emotional content of these (or any other) genres of music, this heatmap does show a good proof of concept for how the lyrics of songs can be used as a means for understanding such content. With this established, a next good step will include finding and throughoughly cleaning different data to ensure that each genre inspected is equally represented in the data. This was a step regretably not taken for the sake of expediancy in getting to the proof of concept here.
 ![Heatmap of emotional scores by genre](images/Genre_emotion_heatmap.jpeg)
 
 ## License
