@@ -272,7 +272,7 @@ df_master_cln = df_master_cln.drop(columns=["Song_Name"]) #drops song_name data 
 ```
 
 ### Step 15
-This cell represents a somewhat optional step in that it isn't completely needed to run the analysis. But it is till usefull as way to get a quick glance at the nature of the lyric data contained in the master dataframe. This can be used as a point in the project to adjust the "stoop_words" set defined in the previous cell's function for preprocessing the lyrical data. The cell begins similarly to the previous cell in that it defines two funtions, "word_frequency_by_genre" and "freq_by_genre", the former of which is used by the later:
+This cell represents a somewhat optional step in that it isn't completely needed to run the analysis. But it is still usefull as a way to get a quick glance at the nature of the lyric data contained in the master dataframe. This can be used as a point in the project to adjust the "stop_words" set defined in the previous cell's function for preprocessing the lyrical data. The cell begins similarly to the previous cell in that it defines two funtions, "word_frequency_by_genre" and "freq_by_genre", the former of which is used by the later:
 ```
 # Function for preformance of word frequency anlaysis of words in different genres
 def word_frequency_by_genre(df,genre,top_n=25):
@@ -405,3 +405,17 @@ print("		" + save_path_pkl)
 print("This data has been stored as a .csv file at:")
 print("		" + save_path_csv)
 ```
+
+### Optional Step
+This next code block is an entirley optional step I took to reload the "df_scores_normalized" and "df_master_cln" for use in the final steps. In my case here I chose to do both so I could verify that the files had been saved to the right place on my computer successfully.
+```
+NormScore_reloaded = pd.read_pickle("F:\\Docs\\personal\\projects\\Sentiment Analysis Project\\Saved Dataframes\\pickles\\df_scores_normalized.pkl")
+Master_cln_reloaded = pd.read_pickle("F:\\Docs\\personal\\projects\\Sentiment Analysis Project\\Saved Dataframes\\pickles\\df_master_cln.pkl")
+```
+
+### Step 18
+Step 18 takes the dataframes that contain the genre information for each set of lyrics (the cleaned master dataframe) and the one that contains the normalized scores (each called "master_cln_reloaded" and "NormScore_reloaded respectivley after having been reloaded in the previous option step), and merges them on thier shared "Row_ID" columns. This new dataframe is the second to final one generated in the course of this project and it is called "df_final". It contains 12 columns (the "Row_ID", a column for the genre lable, and a column for each of the normalized emotion scores).
+`df_final = NormScore_reloaded.merge(Master_cln_reloaded[["Row_ID","Genre_Clean"]], on="Row_ID", how="left")`
+
+### Step 19
+This penultimate is a simple step to group the entries in the final dataframe just created by genre, producing the dataframe that is used to build the heatmap in the next step. This is saved as a dataframe called "df_heatmap" and it contains. along with the "Row_ID" column, 
