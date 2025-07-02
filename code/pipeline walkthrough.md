@@ -1,5 +1,5 @@
 # Pipeline Walkthrough
-this is a walkthrough for the analysis pipeline notebook [here](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis/blob/main/code/Analysis%20Pipeline.ipynb). 
+this is a walkthrough for the analysis pipeline notebook [here](https://github.com/Skylar-Harvey/lyrics-genre-emotion-analysis/blob/main/code/Analysis%20Pipeline.ipynb). Note: All file paths shown in this walkthrough are specific to my system. You'll have to adjust these paths based on where you store the files referenced on your own system.
 
 ### Step 1
 This cell's function is importing libraries and modules needed for running the pipeline. These are:
@@ -86,7 +86,7 @@ This renames several columns of the "df_lyrics" dataframe:
 - "language" --> "Language"
 
 `df_list[2] = df_spot60k.rename(columns={"song":"Song_Name","text":'Lyrics'})`
-This renames the "song" and "text" columns of the "df_spot60k" dataframe to be "Song_Name" and "Lyrics" respectivly.
+This renames the "song" and "text" columns of the "df_spot60k" dataframe to be "Song_Name" and "Lyrics" respectively.
 
 ```
 df_list[3] = df_genius.rename(columns={
@@ -115,7 +115,7 @@ print(df_list[3].columns)
 ```
 
 ### Step 6
-This cell simply adds a new column ("Genre") to the "df_spot60k" dataframe. This was done because the data in this datafram did not come marked with genre labels. Rather than remove it altogether from the project, I elected to keep it and assign the songs it contains a genre lable of "unknown". In the scope of this project, these songs were then lumped in with any other songs in the datasets that lacked any know genre associations . In future endevours, it would be better to find a way to find accurate genre lables for each of these songs.
+This cell simply adds a new column ("Genre") to the "df_spot60k" dataframe. This was done because the data in this datafram did not come marked with genre labels. Rather than remove it altogether from the project, I elected to keep it and assign the songs it contains a genre label of "unknown". In the scope of this project, these songs were then lumped in with any other songs in the datasets that lacked any know genre associations . In future endevours, it would be better to find a way to find accurate genre labels for each of these songs.
 
 `df_list[2]["genre"]="Unknown"`
 
@@ -263,7 +263,7 @@ def clean_genre(genre_string):
 These functions are then applied to the concatenated master dataframe:
 ```
 df_master["Lyrics_Clean"] = df_master["Lyrics"].apply(preprocess_lyrics) #cleaning up lyric data and inserting clean lyric data into new column
-df_master["Genre_Clean"] = df_master["Genre"].apply(clean_genre) #normalizes genre lables, and reasigns song entries with multiple lables a single genre lable based on first match to a desired list (genre_list)
+df_master["Genre_Clean"] = df_master["Genre"].apply(clean_genre) #normalizes genre labels, and reasigns song entries with multiple labels a single genre label based on first match to a desired list (genre_list)
 ```
 And finally, a new, cleaned version of the master dataframe is saved (df_master_cln), and the column "Song_Name" is droped from this new dataframe:
 ```
@@ -272,9 +272,9 @@ df_master_cln = df_master_cln.drop(columns=["Song_Name"]) #drops song_name data 
 ```
 
 ### Step 15
-This cell represents a somewhat optional step in that it isn't completely needed to run the analysis. But it is still usefull as a way to get a quick glance at the nature of the lyric data contained in the master dataframe. This can be used as a point in the project to adjust the "stop_words" set defined in the previous cell's function for preprocessing the lyrical data. The cell begins similarly to the previous cell in that it defines two funtions, "word_frequency_by_genre" and "freq_by_genre", the former of which is used by the later:
+This cell represents a somewhat optional step in that it isn't completely needed to run the analysis. But it is still useful as a way to get a quick glance at the nature of the lyric data contained in the master dataframe. This can be used as a point in the project to adjust the "stop_words" set defined in the previous cell's function for preprocessing the lyrical data. The cell begins similarly to the previous cell in that it defines two functions, "word_frequency_by_genre" and "freq_by_genre", the former of which is used by the later:
 ```
-# Function for preformance of word frequency anlaysis of words in different genres
+# Function for performance of word frequency anlaysis of words in different genres
 def word_frequency_by_genre(df,genre,top_n=25):
 	genre_lyrics = " ".join(df[df["Genre_Clean"] == genre]["Lyrics_Clean"]) #Gather all the lyrics of the specified genre and set them into on large string object
 	words = genre_lyrics.split() #convert string into list of words
@@ -321,7 +321,7 @@ for _, row in df_emolex.iterrows():
 ```
 
 ### Step 17
-These next few cells (17.1 - 17.4) are where the actual analysis is run. This begins with "step 17.1", in which some intial prep for the analysis is run. Specifically, before the analysis step can be run, we:
+These next few cells (17.1 - 17.4) are where the actual analysis is run. This begins with "step 17.1", in which some initial prep for the analysis is run. Specifically, before the analysis step can be run, we:
 - add a column "Row_ID" to the cleaned master dataframe, and give each row of the table a unique identifier number.
 - create a new empty dataframe, "df_scores", that has the same amount of rows as does the cleaned master dataframe, as well as an identical "Row_ID" column.
 - expand the the "df_scores" dataframe to include a column for each emotional association counted for in the EMOlex dataset. All of these are initialized at a value of zero(0).
@@ -335,7 +335,7 @@ for tag in emo_tag_list: #expands df_scores to now have a column for each word i
 	df_scores[tag] = 0
 ```
 
-This bit of prep-work done, we move on to creating a scorring function that goes row-by-row through the cleaned master dataframe with it's preprocessed lyrics and genrates a score for each emotional assotiation based on how many times a word having certain associations is encountered in each string of lyrical data. Essentially, each song's lyrics are tokenized into individual words. Each of these words is then checked to see if it matches an entry in the dictionary genereated in "step 16". If a match is found, the column of "df_scores" that represents the respective emotional associations of that word is increased by a value of one. If a match isn't found, then the word token is passed over and no change to the "df_scores" dataframe is made. With this function in place, we can then run it and generate a table of scores that shows each set of lyric's collective emtional scores. (Note: This part of the code, as it is, takes awhile to run (>2hrs in my case). It, like much else with this project, can certainly be improved upon!)
+This bit of prep-work done, we move on to creating a scorring function that goes row-by-row through the cleaned master dataframe with it's preprocessed lyrics and genrates a score for each emotional association based on how many times a word having certain associations is encountered in each string of lyrical data. Essentially, each song's lyrics are tokenized into individual words. Each of these words is then checked to see if it matches an entry in the dictionary genereated in "step 16". If a match is found, the column of "df_scores" that represents the respective emotional associations of that word is increased by a value of one. If a match isn't found, then the word token is passed over and no change to the "df_scores" dataframe is made. With this function in place, we can then run it and generate a table of scores that shows each set of lyric's collective emtional scores. (Note: This part of the code, as it is, takes awhile to run (>2hrs in my case). It, like much else with this project, can certainly be improved upon!)
 ```
 def score_lyrics(row_n): #define new function "score_lyrics". Function takes in one variable, an row number
 	token_list = df_master_cln.loc[row_n,"Lyrics_Clean"].split() #create a list of word tokens from the lyric string for row_n
@@ -414,7 +414,7 @@ Master_cln_reloaded = pd.read_pickle("F:\\Docs\\personal\\projects\\Sentiment An
 ```
 
 ### Step 18
-Step 18 takes the dataframes that contain the genre information for each set of lyrics (the cleaned master dataframe) and the one that contains the normalized scores (each called "master_cln_reloaded" and "NormScore_reloaded respectivley after having been reloaded in the previous option step), and merges them on thier shared "Row_ID" columns. This new dataframe is the second to final one generated in the course of this project and it is called "df_final". It contains 12 columns (the "Row_ID", a column for the genre lable, and a column for each of the normalized emotion scores).
+Step 18 takes the dataframes that contain the genre information for each set of lyrics (the cleaned master dataframe) and the one that contains the normalized scores (each called "master_cln_reloaded" and "NormScore_reloaded respectivley after having been reloaded in the previous option step), and merges them on thier shared "Row_ID" columns. This new dataframe is the second to final one generated in the course of this project and it is called "df_final". It contains 12 columns (the "Row_ID", a column for the genre label, and a column for each of the normalized emotion scores).
 `df_final = NormScore_reloaded.merge(Master_cln_reloaded[["Row_ID","Genre_Clean"]], on="Row_ID", how="left")`
 
 ### Step 19
